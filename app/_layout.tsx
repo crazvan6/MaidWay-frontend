@@ -5,9 +5,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+// Removed anchor - using redirect in index.tsx instead
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

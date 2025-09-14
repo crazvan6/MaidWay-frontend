@@ -41,3 +41,25 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Testing
+coverage/
+*.lcov
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
