@@ -1,0 +1,21 @@
+// Primitives - Basic building blocks
+export { Input } from './forms/Input';
+export { Button } from './primitives/Button';
+export { AuthButton } from './primitives/ButtonAuth';
+
+// Composites - Composed components
+export { Card } from './composites/Card';
+
+// Features - Feature-specific components
+export { LoginButton } from './features/auth/LoginButton';
+
+// Layout - Layout components
+export { ThemedText } from './themed-text';
+export { ThemedView } from './themed-view';
+
+// Re-export existing components
+export { ExternalLink } from './external-link';
+export { HapticTab } from './haptic-tab';
+export { HelloWave } from './hello-wave';
+export { default as ParallaxScrollView } from './parallax-scroll-view';
+
