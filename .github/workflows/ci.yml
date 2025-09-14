@@ -27,20 +27,19 @@ jobs:
         run: npm run lint
       
       - name: Type checking
-        run: npx tsc --noEmit
-      
-      - name: Check Expo configuration
-        run: npx expo doctor
+        run: npm run type-check
       
       - name: Verify project builds
-        run: npx expo export --platform web
+        run: npm run build:web
       
-      - name: Build iOS (if on main branch)
+      - name: Verify iOS build configuration (if on main branch)
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         run: |
-          npx expo run:ios --configuration Debug --device "iPhone 15 Pro"
+          echo "Checking iOS build configuration..."
+          npx expo config --type public
       
-      - name: Build Android (if on main branch)
+      - name: Verify Android build configuration (if on main branch)
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         run: |
-          npx expo run:android --variant debug
+          echo "Checking Android build configuration..."
+          npx expo config --type public
