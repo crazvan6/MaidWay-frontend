@@ -1,80 +1,64 @@
-import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Dimensions, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../../assets/colors";
-import { AuthButton } from "../../components/primitives/ButtonAuth";
-import sizes from "../../constants/sizes";
+import { PhoneForm } from "../../components/forms/PhoneForm";
 import spacing from "../../constants/spacing";
 import typography from "../../constants/typography";
-
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
+  const handlePhoneSubmit = (phoneNumber: string) => {
+    console.log('Phone number:', '+40' + phoneNumber);
+    // Handle phone authentication
+  };
+
   return (
     <View style={styles.container}>
-      {/* Background */}
-      <View style={styles.backgroundGradient}>
-        {/* Header Section */}
-        <SafeAreaView style={styles.headerSection}>
-          <View style={styles.logoContainer}>
-            <View style={styles.logoIcon}>
-              <Ionicons name="sparkles" size={32} color={colors.primary} />
-            </View>
-            <Text style={styles.appName}>MaidWay</Text>
-            <Text style={styles.tagline}>Professional Cleaning Services</Text>
-          </View>
-        </SafeAreaView>
-
-        {/* Main Content */}
-        <View style={styles.contentSection}>
-          <View style={styles.welcomeContainer}>
-            <Text style={styles.welcomeTitle}>Welcome Back</Text>
-            <Text style={styles.welcomeSubtitle}>
-              Connect with trusted cleaning professionals in your area
-            </Text>
-          </View>
-
-          {/* Auth Button */}
-          <View style={styles.authContainer}>
-            <AuthButton
-              icon={<Ionicons name="call" size={24} color={colors.neutral[100]} />}
-              text={"Continue with Phone Number"}
-              onPress={() => null}
-              style={[styles.buttonAuth, styles.buttonAuthPhone]}
-              textStyle={styles.buttonAuthText}
+      {/* Background Image */}
+      <ImageBackground 
+        source={require('../../assets/images/4887687_52067.jpg')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <View style={styles.overlay}>
+          {/* Main Content - PhoneForm centered vertically */}
+          <View style={styles.contentSection}>
+            <PhoneForm
+              title="Introdu numărul tău de telefon"
+              buttonText="Conectează-te"
+              onSubmit={handlePhoneSubmit}
+              isLoading={isLoading}
             />
           </View>
 
-          {/* Decorative Elements */}
-          <View style={styles.decorativeContainer}>
-            <View style={styles.cleaningIcon}>
-              <Ionicons name="home" size={20} color={colors.primary} />
-            </View>
-            <View style={styles.cleaningIcon}>
-              <Ionicons name="sparkles" size={18} color={colors.primary} />
-            </View>
-            <View style={styles.cleaningIcon}>
-              <Ionicons name="checkmark-circle" size={22} color={colors.primary} />
-            </View>
+          {/* Registration Link */}
+          <View style={styles.registrationContainer}>
+            <Text style={styles.registrationQuestion}>Prima dată pe MaidWay?</Text>
+            <TouchableOpacity onPress={() => router.push('/auth/RegisterScreen')}>
+              <Text style={styles.registrationLink}>
+                Creează cont nou
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Footer */}
+          <View style={styles.footerSection}>
+            <Text style={styles.termsText}>
+              Prin înregistrare, ești de acord cu{' '}
+              <Text style={styles.linkText} onPress={() => {/* handle terms */}}>
+                Termenii și condițiile
+              </Text>
+              {' '}alături de{' '}
+              <Text style={styles.linkText} onPress={() => {/* handle privacy */}}>
+                Politica de confidențialitate
+              </Text>
+              .
+            </Text>
           </View>
         </View>
-
-        {/* Footer */}
-        <View style={styles.footerSection}>
-          <Text style={styles.termsText}>
-            By continuing, you agree to our{' '}
-            <Text style={styles.linkText} onPress={() => {/* handle terms */}}>
-              Terms of Service
-            </Text>
-            {' '}and{' '}
-            <Text style={styles.linkText} onPress={() => {/* handle privacy */}}>
-              Privacy Policy
-            </Text>
-          </Text>
-        </View>
-      </View>
+      </ImageBackground>
     </View>
   );
 }
@@ -82,147 +66,76 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.neutral[100],
   },
 
-  backgroundGradient: {
+  backgroundImage: {
     flex: 1,
-    backgroundColor: colors.neutral[100],
+    width: '100%',
+    height: '100%',
+  },
+  
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Same as CompleteRegistration
   },
 
   // Header Section
   headerSection: {
-    flex: 0.4,
-    justifyContent: 'center',
-    alignItems: 'center',
     paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.lg,
   },
 
-  logoContainer: {
-    alignItems: 'center',
-  },
-
-  logoIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.neutral[100],
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-
-  appName: {
-    fontSize: typography.fontSize.xxxl,
+  title: {
+    fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
-    color: colors.black,
-    marginBottom: spacing.xs,
-  },
-
-  tagline: {
-    fontSize: typography.fontSize.md,
-    color: colors.neutral[600],
-    fontWeight: typography.fontWeight.medium,
+    color: colors.neutral[800],
     textAlign: 'center',
-  },
-
-  // Content Section
-  contentSection: {
-    flex: 0.5,
-    paddingHorizontal: spacing.lg,
-    justifyContent: 'center',
-  },
-
-  welcomeContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.xxl,
-  },
-
-  welcomeTitle: {
-    fontSize: typography.fontSize.xxl,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.black,
     marginBottom: spacing.sm,
   },
 
-  welcomeSubtitle: {
+  subtitle: {
     fontSize: typography.fontSize.md,
     color: colors.neutral[600],
     textAlign: 'center',
     lineHeight: typography.lineHeight.md,
-    paddingHorizontal: spacing.md,
   },
 
-  // Auth Section
-  authContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-
-  buttonAuth: {
-    flexDirection: 'row',
-    borderRadius: 16,
-    width: sizes.buttons.lg.width,
-    height: sizes.buttons.lg.height,
-    alignItems: 'center',
+  // Content Section - PhoneForm takes center space like CompleteRegistration
+  contentSection: {
+    flex: 1,
     justifyContent: 'center',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
   },
 
-  buttonAuthPhone: {
-    backgroundColor: colors.primary,
-  },
-
-  buttonAuthText: {
-    color: colors.neutral[100],
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.semibold,
-    marginLeft: spacing.sm,
-  },
-
-  // Decorative Elements
-  decorativeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+  // Registration Section
+  registrationContainer: {
     alignItems: 'center',
-    marginTop: spacing.lg,
-  },
-
-  cleaningIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.neutral[100],
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: spacing.sm,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-
-  // Footer Section
-  footerSection: {
-    flex: 0.1,
-    justifyContent: 'flex-end',
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
 
+  registrationQuestion: {
+    fontSize: typography.fontSize.md,
+    color: colors.neutral[700],
+    fontWeight: typography.fontWeight.medium,
+    marginBottom: spacing.sm,
+  },
+
+  registrationLink: {
+    fontSize: typography.fontSize.md,
+    color: colors.primary,
+    fontWeight: typography.fontWeight.semibold,
+  },
+
+  // Footer Section
+  footerSection: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xl,
+  },
+
   termsText: {
     fontSize: typography.fontSize.xs,
-    color: colors.neutral[500],
+    color: colors.neutral[700],
     textAlign: 'center',
     lineHeight: typography.lineHeight.sm,
   },
@@ -231,4 +144,8 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: typography.fontWeight.semibold,
   },
+
+
+
+
 })
