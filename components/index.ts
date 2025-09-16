@@ -1,5 +1,6 @@
 // Primitives - Basic building blocks
 export { Input } from './forms/Input';
+export { PhoneForm } from './forms/PhoneForm';
 export { Button } from './primitives/Button';
 export { AuthButton } from './primitives/ButtonAuth';
 
@@ -8,6 +9,7 @@ export { Card } from './composites/Card';
 
 // Features - Feature-specific components
 export { LoginButton } from './features/auth/LoginButton';
+export { RoleCard } from './features/auth/RoleCard';
 
 // Layout - Layout components
 export { ThemedText } from './themed-text';
