@@ -38,6 +38,19 @@ export default function AuthLayout() {
           headerTransparent: true,
         }} 
       />
+      <Stack.Screen 
+        name="OTPConfirmation" 
+        options={{ 
+          headerShown: true,
+          title: '',
+          headerBackTitle: 'Înapoi',
+          headerTintColor: colors.primary,
+          headerStyle: {
+            backgroundColor: 'transparent',
+          },
+          headerTransparent: true,
+        }} 
+      />
     </Stack>
   );
 }

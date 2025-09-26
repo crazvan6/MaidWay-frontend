@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import colors from "../../assets/colors";
 import { PhoneForm } from "../../components/forms/PhoneForm";
 import spacing from "../../constants/spacing";
@@ -9,9 +9,18 @@ import typography from "../../constants/typography";
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handlePhoneSubmit = (phoneNumber: string) => {
+  const handlePhoneSubmit = async (phoneNumber: string) => {
+    setIsLoading(true);
     console.log('Phone number:', '+40' + phoneNumber);
-    // Handle phone authentication
+    // Simulate OTP sending
+    setTimeout(() => {
+      setIsLoading(false);
+      // Navigate to OTP confirmation screen
+      router.push({
+        pathname: '/auth/OTPConfirmation',
+        params: { phoneNumber: phoneNumber }
+      });
+    }, 1000);
   };
 
   return (
@@ -31,16 +40,6 @@ export default function LoginScreen() {
               onSubmit={handlePhoneSubmit}
               isLoading={isLoading}
             />
-          </View>
-
-          {/* Registration Link */}
-          <View style={styles.registrationContainer}>
-            <Text style={styles.registrationQuestion}>Prima dată pe MaidWay?</Text>
-            <TouchableOpacity onPress={() => router.push('/auth/RegisterScreen')}>
-              <Text style={styles.registrationLink}>
-                Creează cont nou
-              </Text>
-            </TouchableOpacity>
           </View>
 
           {/* Footer */}
