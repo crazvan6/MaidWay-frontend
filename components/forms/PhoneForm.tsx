@@ -4,6 +4,7 @@ import { Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View }
 import colors from '../../assets/colors';
 import spacing from '../../constants/spacing';
 import typography from '../../constants/typography';
+import { validatePhone } from '../../lib/utils';
 import { AuthButton } from '../primitives/ButtonAuth';
 
 interface PhoneFormProps {
@@ -22,10 +23,30 @@ export const PhoneForm: React.FC<PhoneFormProps> = ({
   subtitle,
 }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isValid, setIsValid] = useState<boolean | null>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+
+  const handleInputChange = (text: string) => {
+    setPhoneNumber(text);
+    if (text.trim().length > 0) {
+      const valid = validatePhone(text.trim());
+      setIsValid(valid);
+      setShowFeedback(true);
+    } else {
+      setIsValid(null);
+      setShowFeedback(false);
+    }
+  };
 
   const handleSubmit = () => {
     if (phoneNumber.trim()) {
-      onSubmit(phoneNumber.trim());
+      const isValidPhone = validatePhone(phoneNumber.trim());
+      if (isValidPhone) {
+        onSubmit(phoneNumber.trim());
+      } else {
+        setShowFeedback(true);
+        setIsValid(false);
+      }
     }
   };
 
@@ -35,28 +56,48 @@ export const PhoneForm: React.FC<PhoneFormProps> = ({
         {title && <Text style={styles.title}>{title}</Text>}
         {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
         
-        <View style={styles.phoneInputContainer}>
-          <View style={styles.countryCodeContainer}>
-            <Text style={styles.countryCodeText}>+40</Text>
+        <View>
+          <View style={[
+            styles.phoneInputContainer,
+            showFeedback && isValid === false && styles.phoneInputError
+          ]}>
+            <View style={styles.countryCodeContainer}>
+              <Text style={styles.countryCodeText}>+40</Text>
+            </View>
+            <TextInput
+              style={styles.phoneInput}
+              placeholder="Numărul de telefon"
+              placeholderTextColor={colors.neutral[400]}
+              value={phoneNumber}
+              onChangeText={handleInputChange}
+              keyboardType="phone-pad"
+              autoFocus={true}
+              maxLength={9}
+            />
           </View>
-          <TextInput
-            style={styles.phoneInput}
-            placeholder="Numărul de telefon"
-            placeholderTextColor={colors.neutral[400]}
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            keyboardType="phone-pad"
-            autoFocus={true}
-            maxLength={10}
-          />
+          
+          <View style={styles.feedbackSpace}>
+            {showFeedback && isValid === false && (
+              <Text style={styles.feedbackTextErrorClose}>
+                Număr incorect.
+              </Text>
+            )}
+          </View>
         </View>
 
         <AuthButton
           icon={<Ionicons name="checkmark" size={24} color={colors.neutral[100]} />}
           text={buttonText}
           onPress={handleSubmit}
-          style={styles.submitButton}
-          textStyle={styles.submitButtonText}
+          style={[
+            styles.submitButton,
+            showFeedback && isValid === false && styles.submitButtonDisabled
+          ]}
+          textStyle={[
+            styles.submitButtonText,
+            showFeedback && isValid === false && styles.submitButtonTextDisabled
+          ]}
+          disabled={showFeedback && isValid === false}
         />
       </View>
     </TouchableWithoutFeedback>
@@ -141,5 +182,48 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
     marginLeft: spacing.sm,
+  },
+
+  // Validation feedback styles
+  feedbackContainer: {
+    minHeight: 24, // Reserve minimum space to prevent layout shifting
+    marginTop: spacing.sm,
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.sm,
+    justifyContent: 'center',
+  },
+
+  feedbackText: {
+    fontSize: typography.fontSize.sm,
+    textAlign: 'center',
+    lineHeight: typography.lineHeight.sm,
+  },
+
+  feedbackTextError: {
+    color: colors.feedback.error,
+  },
+
+  feedbackSpace: {
+    minHeight: 20, // Reserve space for error message
+    marginLeft: spacing.sm,
+  },
+
+  feedbackTextErrorClose: {
+    color: colors.feedback.error,
+    fontSize: typography.fontSize.sm,
+    textAlign: 'left',
+  },
+
+  phoneInputError: {
+    borderColor: colors.feedback.error,
+  },
+
+  submitButtonDisabled: {
+    backgroundColor: colors.neutral[300],
+    shadowOpacity: 0.1,
+  },
+
+  submitButtonTextDisabled: {
+    color: colors.neutral[500],
   },
 });

@@ -16,11 +16,12 @@ interface AuthButtonProps {
   onPress: TouchableOpacityProps['onPress'];
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  disabled?: boolean;
 }
   
-export const AuthButton: React.FC<AuthButtonProps> = ({ icon, text, onPress, style, textStyle }) => {
+export const AuthButton: React.FC<AuthButtonProps> = ({ icon, text, onPress, style, textStyle, disabled }) => {
   return (
-    <TouchableOpacity style={[styles.buttonAuth, style]} onPress={onPress}>
+    <TouchableOpacity style={[styles.buttonAuth, style]} onPress={disabled ? undefined : onPress} disabled={disabled}>
       {icon}
       <Text style={[styles.buttonAuthText, textStyle]}>{text}</Text>
     </TouchableOpacity>
