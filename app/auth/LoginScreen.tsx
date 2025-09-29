@@ -1,25 +1,85 @@
-import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useEffect, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import colors from "../../assets/colors";
-import { PhoneForm } from "../../components/forms/PhoneForm";
+import { AppleAuthButton, GoogleAuthButton } from "../../components";
 import spacing from "../../constants/spacing";
 import typography from "../../constants/typography";
+import { supabase } from "../../lib/supabase";
+
+// Configure WebBrowser for better OAuth experience
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
 
-  const handlePhoneSubmit = async (phoneNumber: string) => {
-    setIsLoading(true);
-    console.log('Phone number:', '+40' + phoneNumber);
-    // Simulate OTP sending
+  useEffect(() => {
+    // Configure Google Sign-In
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
+      iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
+    });
+  }, []);
+
+  const handleGoogleAuth = async () => {
+    setIsGoogleLoading(true);
+    console.log('Google authentication initiated');
+    
+    try {
+      // Check if Google Play Services are available
+      await GoogleSignin.hasPlayServices();
+      
+      // Sign in with Google
+      const userInfo = await GoogleSignin.signIn();
+      
+      if (userInfo.data!.idToken) {
+        console.log('ID Token received:', userInfo!.data!.idToken);
+        
+        // Sign in with Supabase using the ID token
+        const { data, error } = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: userInfo.data!.idToken,
+        });
+        
+        if (error) {
+          console.error('Supabase auth error:', error);
+          alert('Authentication failed: ' + error.message);
+        } else {
+          console.log('Authentication successful:', data);
+          alert('Welcome! You are now logged in.');
+          // TODO: Navigate to main app
+        }
+      } else {
+        throw new Error('No ID token present!');
+      }
+      
+    } catch (error: any) {
+      console.error('Google auth error:', error);
+      
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('User cancelled the login flow');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log('Operation is in progress already');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        alert('Google Play Services not available or outdated');
+      } else {
+        alert('Authentication failed: ' + error.message);
+      }
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleAppleAuth = async () => {
+    setIsAppleLoading(true);
+    console.log('Apple authentication initiated');
+    // Simulate authentication process
     setTimeout(() => {
-      setIsLoading(false);
-      // Navigate to OTP confirmation screen
-      router.push({
-        pathname: '/auth/OTPConfirmation',
-        params: { phoneNumber: phoneNumber }
-      });
+      setIsAppleLoading(false);
+      // Navigate to main app after successful auth
+      console.log('Apple authentication successful');
     }, 1000);
   };
 
@@ -32,14 +92,26 @@ export default function LoginScreen() {
         resizeMode="cover"
       >
         <View style={styles.overlay}>
-          {/* Main Content - PhoneForm centered vertically */}
+          {/* Header Section */}
+          <View style={styles.headerSection}>
+            <Text style={styles.title}></Text>
+            <Text style={styles.subtitle}>
+              
+            </Text>
+          </View>
+
+          {/* Main Content - Third Party Auth Buttons */}
           <View style={styles.contentSection}>
-            <PhoneForm
-              title="Introdu numărul tău de telefon"
-              buttonText="Conectează-te"
-              onSubmit={handlePhoneSubmit}
-              isLoading={isLoading}
-            />
+            <View style={styles.authButtonsContainer}>
+              <GoogleAuthButton 
+                onPress={handleGoogleAuth}
+                disabled={isGoogleLoading}
+              />
+              <AppleAuthButton 
+                onPress={handleAppleAuth}
+                disabled={isAppleLoading}
+              />
+            </View>
           </View>
 
           {/* Footer */}
@@ -100,30 +172,17 @@ const styles = StyleSheet.create({
     lineHeight: typography.lineHeight.md,
   },
 
-  // Content Section - PhoneForm takes center space like CompleteRegistration
+  // Content Section - Auth buttons centered vertically
   contentSection: {
     flex: 1,
     justifyContent: 'center',
-  },
-
-  // Registration Section
-  registrationContainer: {
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
   },
 
-  registrationQuestion: {
-    fontSize: typography.fontSize.md,
-    color: colors.neutral[700],
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: spacing.sm,
-  },
-
-  registrationLink: {
-    fontSize: typography.fontSize.md,
-    color: colors.primary,
-    fontWeight: typography.fontWeight.semibold,
+  // Auth buttons container
+  authButtonsContainer: {
+    width: '85%',
+    maxWidth: 500,
   },
 
   // Footer Section
